@@ -37,10 +37,11 @@ program matrix_vector_multiplication
     integer :: N, i, j, start, end, rate
     real :: time_taken
     real :: random_n
+    real :: tempo_medio
 
-    integer :: nn, arrayN(10)
-    character(len=30) :: filename = "tempo_normal_fortran"
-    ! character(len=30) :: filename = "tempo_trocado_fortran"
+    integer :: nn, mm, arrayN(10)
+    ! character(len=30) :: filename = "tempo_normal_fortran"
+    character(len=30) :: filename = "tempo_trocado_fortran"
     integer :: ierr, unit
 
     call srand(1000)
@@ -55,45 +56,48 @@ program matrix_vector_multiplication
 
     do nn = 1, 10
         N = arrayN(nn)
-        allocate(A(N,N), X(N), B(N))
+        tempo_medio = 0
+        do mm = 1, 10
+            allocate(A(N,N), X(N), B(N))
 
-        do i = 1, N
-            call random_number(random_n)
-            X(i) = int(random_n * 10)
-            do j = 1, N
+            do i = 1, N
                 call random_number(random_n)
-                A(i,j) = int(random_n * 10)
+                X(i) = int(random_n * 10)
+                do j = 1, N
+                    call random_number(random_n)
+                    A(i,j) = int(random_n * 10)
+                end do
             end do
-        end do
 
-        call system_clock(start, rate)
+            call system_clock(start, rate)
 
-        do i = 1, N
-            do j = 1, N
-                B(i) = B(i) + A(i,j) * X(j)
+            ! do i = 1, N
+            !     do j = 1, N
+            !         B(i) = B(i) + A(i,j) * X(j)
+            !     end do
+            ! end do
+
+            do i = 1, N
+                do j = 1, N
+                    B(i) = B(i) + A(j,i) * X(j)
+                end do
             end do
-        end do
 
-        ! do i = 1, N
-        !     do j = 1, N
-        !         B(i) = B(i) + A(j,i) * X(j)
-        !     end do
-        ! end do
+            call system_clock(end, rate)
 
-        call system_clock(end, rate)
+            time_taken = real(end-start)/real(rate)
 
-        time_taken = real(end-start)/real(rate)
-
-        ! print *, "A:"
-        ! call print_matrix(A, N)
-        ! print *, "X:"
-        ! call print_vector(X, N)
-        ! print *, "B:"
-        ! call print_vector(B, N)
-        print *, "Tempo: ", time_taken, "s"
-        write(unit, "(F0.3)") time_taken
-    
-        deallocate(A, X, B)
+            ! print *, "A:"
+            ! call print_matrix(A, N)
+            ! print *, "X:"
+            ! call print_vector(X, N)
+            ! print *, "B:"
+            ! call print_vector(B, N)
+            tempo_medio = tempo_medio + time_taken
+            deallocate(A, X, B)
+        end do;
+        print *, "Tempo: ", tempo_medio/10, "s"
+        write(unit, "(F0.3)") tempo_medio/10
     end do
 
     close(unit)

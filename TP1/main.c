@@ -25,64 +25,69 @@ int main(int argc, char *argv[]) {
     srand(time(NULL));
 
     FILE *arquivo;
-    // arquivo = fopen("tempo_normal", "w");
-     arquivo = fopen("tempo_trocado", "w");
+    arquivo = fopen("tempo_normal", "w");
+    //  arquivo = fopen("tempo_trocado", "w");
 
     int N;
     int arrayN[10] = {1000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 50000};
 
     for(int n = 0; n < 10; n++){
         N = arrayN[n];
+        double tempo_medio = 0;
+        for(int m = 0; m < 10; m++){
 
-        int **A = (int**) calloc(N, sizeof(int*));
-        int *X = (int*) calloc(N, sizeof(int));
-        int *B = (int*) calloc(N, sizeof(int));
-        for(int i=0; i<N; i++){
-            A[i] = (int*) calloc(N, sizeof(int));
-        }
-
-        for(int i=0; i<N; i++){
-            X[i] = rand()%10;
-            for(int j=0; j<N; j++){
-                A[i][j] = rand()%10;
+            int **A = (int**) calloc(N, sizeof(int*));
+            int *X = (int*) calloc(N, sizeof(int));
+            int *B = (int*) calloc(N, sizeof(int));
+            for(int i=0; i<N; i++){
+                A[i] = (int*) calloc(N, sizeof(int));
             }
-        }
 
-        start = clock();
-        
-        // for (int i = 0; i < N; i++) {
-        //     for (int j = 0; j < N; j++) {
-        //         B[i] += A[i][j] * X[j];
-        //     }
-        // }
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                B[i] += A[j][i] * X[j];
+            for(int i=0; i<N; i++){
+                X[i] = rand()%10;
+                for(int j=0; j<N; j++){
+                    A[i][j] = rand()%10;
+                }
             }
+
+            start = clock();
+            
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    B[i] += A[i][j] * X[j];
+                }
+            }
+
+            // for (int i = 0; i < N; i++) {
+            //     for (int j = 0; j < N; j++) {
+            //         B[i] += A[j][i] * X[j];
+            //     }
+            // }
+
+            end = clock();
+
+            time_taken = ((double) (end - start)) / CLOCKS_PER_SEC; // s
+
+            // printf("A:");
+            // printMatriz(A, N);
+            // printf("X:");
+            // printVetor(X, N);
+            // printf("B:");
+            // printVetor(B, N);
+
+            for(int i=0; i<N; i++){
+                free(A[i]);
+            }
+            free(A);
+            free(B);
+            free(X);
+
+            tempo_medio+= time_taken;
         }
 
-        end = clock();
+        printf("Tempo Medio: %.5f s\n", tempo_medio/10);
 
-        time_taken = ((double) (end - start)) / CLOCKS_PER_SEC; // s
-
-        // printf("A:");
-        // printMatriz(A, N);
-        // printf("X:");
-        // printVetor(X, N);
-        // printf("B:");
-        // printVetor(B, N);
-
-        for(int i=0; i<N; i++){
-            free(A[i]);
-        }
-        free(A);
-        free(B);
-        free(X);
-
-        printf("Tempo: %.5f s\n", time_taken);
-
-        fprintf(arquivo,"%.5f\n", time_taken);
+        fprintf(arquivo,"%.5f\n", tempo_medio/10);
     }
 
     printf("Fim!\n");
